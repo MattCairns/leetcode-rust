@@ -40,57 +40,27 @@ pub fn pivot_index(nums: Vec<i32>) -> i32 {
 }
 
 pub fn is_isomorphic(s: String, t: String) -> bool {
+    println!("{} == {}", t, s);
+    let mut b = true;
     if s.len() != t.len() {
-        false
+        b = false;
     } else {
-        let mut sl = 0;
-        let mut tl = 0;
-        let mut sm: HashMap<u8, u32> = HashMap::new();
-        let mut tm: HashMap<u8, u32> = HashMap::new();
-        let mut sv = Vec::new();
-        let mut tv = Vec::new();
-        sv.push(sl);
-        tv.push(sl);
-        (1..s.len()).for_each(|i| {
-            if s.as_bytes()[i] != s.as_bytes()[i - 1] {
-                if sm.contains_key(&s.as_bytes()[i]) {
-                    let op = sm.get(&s.as_bytes()[i]);
-                    match op {
-                        Some(x) => sv.push(*x),
-                        None => (),
-                    }
-                } else {
-                    sl += 1;
-                    sv.push(sl);
-                    sm.insert(s.as_bytes()[i], sl);
-                }
-            } else {
-                sv.push(sl);
-            }
-            if t.as_bytes()[i] != t.as_bytes()[i - 1] {
-                if tm.contains_key(&t.as_bytes()[i]) {
-                    let op = tm.get(&t.as_bytes()[i]);
-                    match op {
-                        Some(x) => tv.push(*x),
-                        None => (),
-                    }
-                } else {
-                    tl += 1;
-                    tv.push(tl);
-                }
-            } else {
-                tv.push(tl);
-            }
-            sm.insert(s.as_bytes()[i], sl);
-            tm.insert(t.as_bytes()[i], tl);
-        });
-
-        if sv == tv {
-            true
-        } else {
-            false
+        let sb = s.as_bytes();
+        let tb = t.as_bytes();
+        let mut s_map: HashMap<u8, u8> = HashMap::new();
+        let mut t_map: HashMap<u8, u8> = HashMap::new();
+        // let ret = (1..s.len()).for_each(|i| -> bool {
+        for i in 0..s.len() {
+            if !s_map.contains_key(&sb[i]) && !t_map.contains_key(&tb[i]) {
+                s_map.insert(sb[i], tb[i]);
+                t_map.insert(tb[i], sb[i]);
+            } 
+            if s_map.get(&sb[i]).unwrap() != &tb[i] || t_map.get(&tb[i]).unwrap() != &sb[i] {
+                b = false;
+            } 
         }
     }
+    b
 }
 
 pub fn is_subsequence(s: String, t: String) -> bool {
@@ -106,14 +76,14 @@ pub fn is_subsequence(s: String, t: String) -> bool {
         for i in s_index..tb.len() {
             if sb[s_index] == tb[i] {
                 found = true;
-                s_index = i+1;
+                s_index = i + 1;
                 break;
             }
         }
         println!("{}", s_index);
         if !found {
             return false;
-        } else if s_index >= sb.len() -1 {
+        } else if s_index >= sb.len() - 1 {
             break;
         }
     }
@@ -168,24 +138,25 @@ mod tests {
         assert_eq!(pivot_index(nums), 0);
     }
 
-    // #[test]
-    // fn test_is_isomorphic() {
-    //     assert_eq!(is_isomorphic("egg".to_string(), "add".to_string()), true);
-    //     assert_eq!(is_isomorphic("foo".to_string(), "bar".to_string()), false);
-    //     assert_eq!(is_isomorphic("badc".to_string(), "baba".to_string()), false);
-    //     assert_eq!(
-    //         is_isomorphic("aaeaa".to_string(), "uuxyy".to_string()),
-    //         false
-    //     );
-    //     assert_eq!(
-    //         is_isomorphic("paper".to_string(), "title".to_string()),
-    //         true
-    //     );
-    //     assert_eq!(
-    //         is_isomorphic("papap".to_string(), "titii".to_string()),
-    //         false
-    //     );
-    // }
+    #[test]
+    fn test_is_isomorphic() {
+        assert_eq!(is_isomorphic("leet".to_string(), "code".to_string()), false);
+        assert_eq!(is_isomorphic("egg".to_string(), "add".to_string()), true);
+        assert_eq!(is_isomorphic("foo".to_string(), "bar".to_string()), false);
+        assert_eq!(is_isomorphic("badc".to_string(), "baba".to_string()), false);
+        assert_eq!(
+            is_isomorphic("aaeaa".to_string(), "uuxyy".to_string()),
+            false
+        );
+        assert_eq!(
+            is_isomorphic("paper".to_string(), "title".to_string()),
+            true
+        );
+        assert_eq!(
+            is_isomorphic("papap".to_string(), "titii".to_string()),
+            false
+        );
+    }
 
     #[test]
     fn test_is_subsequence() {
@@ -197,9 +168,6 @@ mod tests {
             is_isomorphic("axc".to_string(), "ahbgdc".to_string()),
             false
         );
-        assert_eq!(
-            is_isomorphic("".to_string(), "ahbgdc".to_string()),
-            false
-        );
+        assert_eq!(is_isomorphic("".to_string(), "ahbgdc".to_string()), false);
     }
 }
